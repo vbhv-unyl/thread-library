@@ -102,7 +102,7 @@ int create(void (*f)(void))
     if (running == 0)
     {
         for (int i = 0; i < MAX; i++)
-            initStatistics(&(threadList[i].stats), i);
+            initialize(&(threadList[i].stats), i);
 
         running = 1;
     }
@@ -136,7 +136,7 @@ int createArgs(void *(*f)(void *), void *arg)
     if (running == 0)
     {
         for (int i = 0; i < MAX; i++)
-            initStatistics(&(threadList[i].stats), i);
+            initialize(&(threadList[i].stats), i);
 
         running = 1;
     }
