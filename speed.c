@@ -98,7 +98,7 @@ void terminate(void)
 
 int create(void (*f)(void))
 {
-    int id = -1;
+    int ID = -1;
     if (running == 0)
     {
         for (int i = 0; i < MAX; i++)
@@ -111,28 +111,28 @@ int create(void (*f)(void))
     {
         if (threadList[i].stats.state == DEAD)
         {
-            id = i;
+            ID = i;
             break;
         }
     }
 
-    if (id == -1)
+    if (ID == -1)
     {
-        fprintf(stderr, "Error Cannot allocate id");
+        fprintf(stderr, "ID allocation failed\n");
         return id;
     }
 
-    assert(id >= 0 && id < MAX);
+    assert(ID >= 0 && ID < MAX);
     threadList[id].type = NOARG;
     threadList[id].f1 = f;
     threadList[id].stats.state = NEW;
     threadCount += 1;
-    return id;
+    return ID;
 }
 
 int createArgs(void *(*f)(void *), void *arg)
 {
-    int id = -1;
+    int ID = -1;
     if (running == 0)
     {
         for (int i = 0; i < MAX; i++)
@@ -145,14 +145,14 @@ int createArgs(void *(*f)(void *), void *arg)
     {
         if (threadList[i].stats.state == DEAD)
         {
-            id = i;
+            ID = i;
             break;
         }
     }
 
-    if (id == -1)
+    if (ID == -1)
     {
-        fprintf(stderr, "Error Cannot allocate id");
+        fprintf(stderr, "ID allocation failed\n");
         return id;
     }
 
@@ -161,10 +161,10 @@ int createArgs(void *(*f)(void *), void *arg)
     threadList[id].args = arg;
     threadList[id].stats.state = NEW;
     threadCount += 1;
-    return id;
+    return ID;
 }
 
-int getID(void)
+int getID()
 {
     return currentThread;
 }
@@ -252,16 +252,16 @@ INFO *getStatus(int threadID)
     return res;
 }
 
-void start(void)
+void start()
 {
-    address_t sp, pc;
+    address_t stack_pointer, program_counter;
     for (int i = 0; i < MAX; i++)
     {
         sp = (address_t)threadList[i].stack + STACK_SIZE - sizeof(address_t);
         pc = (address_t)wrapperfn;
         sigsetjmp(threadList[i].buffer, 1);
-        (threadList[i].buffer)[SP] = translate_address(sp);
-        (threadList[i].buffer)[PC] = translate_address(pc);
+        (threadList[i].buffer)[SP] = translate_address(stack_pointer);
+        (threadList[i].buffer)[PC] = translate_address(program_counter);
         if (threadList[i].stats.state == NEW)
             threadList[i].stats.state = READY;
     }
